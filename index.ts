@@ -1,26 +1,25 @@
 import express, { Request, Response } from 'express';
-import OpenAI from 'openai';
-import 'dotenv/config';
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import "dotenv/config";
 
 enum Sentiment {
-    Positive = "😊",
-    Negative = "😠",
-    Neutral = "😐",
+  Positive = "😊",
+  Negative = "😠",
+  Neutral = "😐",
 }
 enum SentimentType {
-    Positive = "positive",
-    Negative = "negative",
-    Neutral = "neutral",
+  Positive = "positive",
+  Negative = "negative",
+  Neutral = "neutral",
 }
 
 // init Express app
 const app = express();
 app.use(express.json());
 
-// init OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// init Google Gemini Client
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // defining the docs for the function
 const functionDocs = {
@@ -41,10 +40,9 @@ const functionDocs = {
 };
 
 // endpoint
-const functionPath = '/sentimentToEmoji';
+const functionPath = "/sentimentToEmoji";
 
 // GET for docs
-
 app.get(functionPath, (req: Request, res: Response) => {
   res.status(200).json(functionDocs);
 });
@@ -53,37 +51,22 @@ app.get(functionPath, (req: Request, res: Response) => {
 app.post(functionPath, async (req: Request, res: Response) => {
   const { input } = req.body;
 
-  // 1. Input validation
+  // input validation
   if (!input || typeof input !== "string") {
-    return res
-      .status(400)
-      .send({
-        error:
-          "Invalid input. Please type a regular sentence or phrase to analyze.",
-      });
+    return res.status(400).send({
+      error:
+        "Invalid input. Please type a regular sentence or phrase to analyze.",
+    });
   }
 
   try {
-    // 2. Call the LLM to get the sentiment
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4.1", // faster
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a sentiment analysis expert. Your task is to analyze the user's text and determine if its sentiment is positive, negative, or neutral. You must respond with only a single word: 'positive', 'negative', or 'neutral'.",
-        },
-        {
-          role: "user",
-          content: input,
-        },
-      ],
-      temperature: 0, // We want deterministic output
-    });
+    // getting sentiment
+    const prompt = `Analyze the sentiment of the following text. Respond with only a single word: 'positive', 'negative', or 'neutral'. Do not add any other explanation or punctuation.\n\nText: "${input}"`;
 
-    const sentiment = (completion.choices[0]?.message?.content ?? "")
-      .toLowerCase()
-      .trim();
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+
+    const sentiment = response.text().toLowerCase().trim();
 
     // 3. Map sentiment to an emoji
     let output = Sentiment.Neutral;
@@ -96,12 +79,10 @@ app.post(functionPath, async (req: Request, res: Response) => {
     // 4. Send the response
     res.status(200).send({ output });
   } catch (error) {
-    console.error("Error calling OpenAI API:", error);
-    res
-      .status(500)
-      .send({
-        error: "Failed to analyze sentiment due to an internal server error.",
-      });
+    console.error("Error calling Google Gemini API:", error);
+    res.status(500).send({
+      error: "Failed to analyze sentiment due to an internal server error.",
+    });
   }
 });
 
