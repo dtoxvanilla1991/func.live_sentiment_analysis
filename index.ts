@@ -23,7 +23,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // defining the docs for the function
 const functionDocs = {
-  name: "sentimentAnalysis",
+  name: "sentimentToEmoji",
   description:
     "Analyzes the sentiment of a given text using OpenAI's API and return the corresponding emoji.",
   input: {
