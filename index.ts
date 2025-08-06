@@ -66,7 +66,7 @@ app.post(functionPath, async (req: Request, res: Response) => {
   try {
     // 2. Call the LLM to get the sentiment
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o", // faster
+      model: "gpt-4.1", // faster
       messages: [
         {
           role: "system",
@@ -99,7 +99,9 @@ app.post(functionPath, async (req: Request, res: Response) => {
     console.error("Error calling OpenAI API:", error);
     res
       .status(500)
-      .send({ error: "Failed to analyze sentiment due to an internal servererror." });
+      .send({
+        error: "Failed to analyze sentiment due to an internal server error.",
+      });
   }
 });
 
