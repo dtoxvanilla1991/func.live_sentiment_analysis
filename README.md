@@ -30,7 +30,7 @@ Use the `GET` method to retrieve the function's documentation in the required JS
 
 **Example Request:**
 ```bash
-curl [https://funclive-sentiment-analysis.vercel.app/sentimentToEmoji](https://funclive-sentiment-analysis.vercel.app/sentimentToEmoji)`
+curl https://funclive-sentiment-analysis.vercel.app/sentimentToEmoji
 ```
 
 Example Response:
@@ -59,7 +59,7 @@ Use the `POST` method to execute the function.
 
 **Example Request:**
 ```bash
-curl -X POST [https://funclive-sentiment-analysis.vercel.app/sentimentToEmoji](https://funclive-sentiment-analysis.vercel.app/sentimentToEmoji) \
+curl -X POST https://funclive-sentiment-analysis.vercel.app/sentimentToEmoji \
    -H "Content-Type: application/json" \
    -d '{"input": "This is a fantastic product, I am so impressed!"}'
 ```
