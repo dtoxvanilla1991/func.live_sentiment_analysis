@@ -85,7 +85,7 @@ To run this project on your own machine, follow these steps.
 ## 2. Clone and Install
 ```bash
 # Clone the repository
-git clone [https://github.com/your-username/func.live_sentiment_analysis.git](https://github.com/your-username/func.live_sentiment_analysis.git)
+git clone https://github.com/dtoxvanilla1991/func.live_sentiment_analysis.git
 
 # Navigate into the project directory
 cd func.live_sentiment_analysis
